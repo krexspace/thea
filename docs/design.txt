@@ -1,0 +1,18 @@
+// renderer can be CLI or Web, CLI returns objects
+r = sess.create_node('Tiger','realm')
+g = sess.create_node('Todays Pics','cluster')
+
+sess.makeChild(r,g) // case of link
+sess.clearContext() // sess.cc
+
+sess.currentParent(g) // sess.ca
+sess.autoParent(true)
+n1 = sess.create_image('url','keywords',)
+n2 = sess.create_image('url','keywords',)
+n3 = sess.create_image('url','keywords',)
+# sess.autoParent(false)
+
+res = sess.searchByKwds('animation')
+print(res)
+
+sess.runDriver('suggestNext',[n1,n2])
