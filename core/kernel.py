@@ -29,10 +29,9 @@ class Graph(Bean):
 
     def f(self, **params):
         resp = cm.cmd_find_by(params)
-        print(resp)
         nlist = []
         for rec in resp['list']:
-            nd = Node(None)
+            nd = Node(e=True)
             nd.dat = rec
             nlist.append(nd)
         return nlist
@@ -40,7 +39,7 @@ class Graph(Bean):
     def fo(self, **params):
         resp = self.f(**params)
         if len(resp) > 1:
-            raise Exception('More than one Node detected. Use f()')
+            raise Exception('More than one Node found. Use f()')
         elif len(resp) == 0:
             return None
         return resp[0]
@@ -54,7 +53,7 @@ class Session(Bean):
   
 class Node(Bean):
     def __init__(self, **params):
-        if params['shell'] != True:
+        if 'e' not in params or params['e'] != True:
             super().__init__(**params)
             resp = cm.cmd_create_node(self.dat)
             self.__err(resp)
