@@ -54,7 +54,7 @@ class Session(Bean):
   
 class Node(Bean):
     def __init__(self, **params):
-        if params['shell'] == True:
+        if params['shell'] != True:
             super().__init__(**params)
             resp = cm.cmd_create_node(self.dat)
             self.__err(resp)
