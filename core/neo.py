@@ -25,8 +25,12 @@ class GraphDb:
         resp = []
         for rec in r:
             dic = {}
-            for kv in rec.values()[0].items():
-                dic[kv[0]] = kv[1]
+            for rec_vals in rec.values():
+                if type(rec_vals) is int:
+                    dic['id'] = rec_vals # id is expected when type is int
+                else:
+                    for kv in rec_vals.items():
+                        dic[kv[0]] = kv[1]
             resp.append(dic)
         return resp
 
@@ -114,11 +118,14 @@ class GraphDb:
 
 
     def delete_rel_by_nid(self, nid1, nid2, rel_type="STD"):
-
+        if rel_type is not None:
+            type_str = 'AND r.type = {type} '
+        else:
+            type_str = ''
         cyp = 'MATCH (a:PNODE)-[r:NCONN]-(b:PNODE) ' \
-            'WHERE a.nid = {nid1} AND b.nid = {nid2} AND r.type = {type} ' \
+            'WHERE a.nid = {nid1} AND b.nid = {nid2} ' + type_str +\
             'DELETE r'
-
+        
         params = {"nid1": nid1, "nid2": nid2, "type": rel_type}
         r = self.fire_cypher_empty(cyp, params)
         # returns the new rel id
@@ -146,7 +153,6 @@ class GraphDb:
         r = self.fire_cypher_empty(cyp, params)
         # returns the new rel id
         return r
-
 
     # from neo.base import delete_all as del_all
     def delete_all(self):
