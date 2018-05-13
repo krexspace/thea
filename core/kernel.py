@@ -101,16 +101,16 @@ class Node(Bean):
         return 'node-> ' + str(self.dat)
 
     # outgoing link or connection
-    def lo(self, n, st=50, ctype='STD'):
+    def clo(self, n, st=50, ctype='STD'):
         cm.cmd_create_conn({'src':self.dat['nid'],'dest':n.dat['nid'],'st':st,'type':ctype})
         return self
 
     # incoming link or connection
-    def li(self, n, st=50, ctype='STD'):
+    def cli(self, n, st=50, ctype='STD'):
         cm.cmd_create_conn({'dest':self.dat['nid'],'src':n.dat['nid'],'st':st,'type':ctype})
         return self
 
-    def links_to(self, n, ctype=None):
+    def foutlinks(self, n, ctype=None):
         resp  = cm.find_conns(src=self.dat['nid'], dest=n.dat['nid'], type=ctype)
         conn_list = []
         for c in resp['val']:
@@ -121,15 +121,15 @@ class Node(Bean):
             conn_list.append(cn)
         return conn_list
 
-    def link_to(self, n, ctype=None):
-        resp = self.links_to(n, ctype)
+    def foutlink(self, n, ctype=None):
+        resp = self.foutlinks(n, ctype)
         if len(resp) > 1:
-            raise Exception('More than one connection detected. Use links_to()')
+            raise Exception('More than one connection detected. Use foutlinks()')
         elif len(resp) == 0:
             return None
         return resp[0]
 
-    def links_from(self, n, ctype=None):
+    def finlinks(self, n, ctype=None):
         resp  = cm.find_conns(dest=self.dat['nid'], src=n.dat['nid'], type=ctype)
         conn_list = []
         for c in resp['val']:
@@ -140,13 +140,18 @@ class Node(Bean):
             conn_list.append(cn)
         return conn_list
     
-    def link_from(self, n, ctype=None):
-        resp = self.links_from(n, ctype)
+    def finlink(self, n, ctype=None):
+        resp = self.finlinks(n, ctype)
         if len(resp) > 1:
-            raise Exception('More than one connection detected. Use links_from()')
+            raise Exception('More than one connection detected. Use links_finlinksfrom()')
         elif len(resp) == 0:
             return None
         return resp[0]
+    '''
+    foutnodes
+    finnodes
+    finnode
+    '''
 
 
 class Conn(Bean):
