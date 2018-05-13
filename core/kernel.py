@@ -43,13 +43,66 @@ class Graph(Bean):
         elif len(resp) == 0:
             return None
         return resp[0]
+
+    def cn(self, **params):
+        n = Node(**params)
+        return n
+
+    def realm(self, title, **params):
+        p = dict(title=title, type='rlm')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def cluster(self, title, **params):
+        p = dict(title=title, type='cl')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def note(self, title, **params):
+        p = dict(title=title, type='note')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
     
+    def idea(self, title, **params):
+        p = dict(title=title, type='idea')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+    
+    def img(self, src, **params):
+        p = dict(src=src, type='img')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def yt(self, url, **params):
+        p = dict(url=url, type='yt')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def th(self, title, **params):
+        p = dict(title=title, type='th')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def lnk(self, url, title, **params):
+        title = url if title is None else title
+        p = dict(title=title, type='lnk')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def clink(n1, n2, st=50, ctype='STD'):
+        n1.lo(n2, st, ctype)
+
 class Session(Bean):
     def __init__(self, **params):
         super().__init__(**params)
-    
-    def link(n1, n2, st=50, ctype='STD'):
-        n1.lo(n2, st, ctype)
   
 class Node(Bean):
     def __init__(self, **params):
@@ -79,7 +132,7 @@ class Node(Bean):
         return None
     
     # refresh from db
-    def ref(self):
+    def refresh(self):
         self.__isLive()
         resp = cm.cmd_find_by({'nid':self.dat['nid']})
         self.dat = resp['list'][0]
@@ -87,7 +140,7 @@ class Node(Bean):
 
     # same as ref
     def ld(self):
-        return self.ref()
+        return self.refresh()
 
     def __isLive(self):
         if self.dat is None:
@@ -110,43 +163,57 @@ class Node(Bean):
         cm.cmd_create_conn({'dest':self.dat['nid'],'src':n.dat['nid'],'st':st,'type':ctype})
         return self
 
-    def foutlinks(self, n, ctype=None):
-        resp  = cm.find_conns(src=self.dat['nid'], dest=n.dat['nid'], type=ctype)
+    def foutlinksto(self, n, ctype=None):
+        dest = n.dat['nid']
+        src = self.dat['nid']
+        resp  = cm.find_conns(dest=dest, src=src, type=ctype)
         conn_list = []
         for c in resp['val']:
             # copy to cid
             c['cid'] = c['id']
             del c['id']
+            c['src'] = src
+            c['dest'] = dest
+            
             cn = Conn(**c)
             conn_list.append(cn)
         return conn_list
 
-    def foutlink(self, n, ctype=None):
-        resp = self.foutlinks(n, ctype)
+    def foutlinkto(self, n, ctype=None):
+        resp = self.foutlinksto(n, ctype)
         if len(resp) > 1:
             raise Exception('More than one connection detected. Use foutlinks()')
         elif len(resp) == 0:
             return None
         return resp[0]
 
-    def finlinks(self, n, ctype=None):
-        resp  = cm.find_conns(dest=self.dat['nid'], src=n.dat['nid'], type=ctype)
+    def finlinksfrom(self, n, ctype=None):
+        src = n.dat['nid']
+        dest = self.dat['nid']
+        resp  = cm.find_conns(dest=dest, src=src, type=ctype)
         conn_list = []
         for c in resp['val']:
             # copy to cid
             c['cid'] = c['id']
             del c['id']
+            c['src'] = src
+            c['dest'] = dest
+            
             cn = Conn(**c)
             conn_list.append(cn)
         return conn_list
     
-    def finlink(self, n, ctype=None):
-        resp = self.finlinks(n, ctype)
+    def finlinkfrom(self, n, ctype=None):
+        resp = self.finlinksfrom(n, ctype)
         if len(resp) > 1:
             raise Exception('More than one connection detected. Use links_finlinksfrom()')
         elif len(resp) == 0:
             return None
         return resp[0]
+
+    def ftree(self, ctype=None):
+        clist = cm.fetch_child_nodes_and_conns(self.dat['nid'])
+        return clist
     '''
     foutnodes
     finnodes

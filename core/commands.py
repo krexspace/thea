@@ -13,7 +13,7 @@ import juanix.central_processor as cp
 Usage examples
 cp.cmd_fetch_all()
 cp.cmd_find_by({'kwds':'ideas'})
-cp.cmd_find_by({'type':'thought'})
+cp.cmd_find_by({'type':'th'})
 cp.cmd_create_node({'title':'Great experiences', 'kwds':'fun,experience,bliss'})
 """
 
@@ -80,7 +80,7 @@ def cmd_create_node(cparams):
         ut.log('In cmd_create_node:', cparams)
         # cparams['nid'] = gen_uuid()
         if 'type' not in cparams:
-            cparams['type'] = 'thought'
+            cparams['type'] = 'th'
         if 'zone' not in cparams:
             cparams['zone'] = 'std'
         if checkKwds(cparams):
@@ -118,7 +118,7 @@ def cmd_update_node(cparams):
         if 'nid' not in cparams:
             raise Exception('nid is required to update')
         if 'type' not in cparams:
-            cparams['type'] = 'thought'
+            cparams['type'] = 'th'
         if 'zone' not in cparams:
             cparams['zone'] = 'std'
         if checkKwds(cparams):
@@ -336,9 +336,9 @@ Currently uses recursion and multiple child calls.abs This can be
 optimized at the NEO layer to fetch everything in one go, and at MONGO layer by sending multiple 
 
 """
-def fetch_node_tree(rootNid):
+def fetch_node_tree(rootNid, lev=1):
     level = 0
-    maxLev = 5
+    maxLev = lev
     nodes = set()
     conns = []
     fetch_node_tree_inner(rootNid, level, nodes, conns, maxLev)
@@ -366,19 +366,16 @@ def fetch_child_nodes_and_conns(nid):
     nodes = set()
     conns = []
     res = neo.find_all_out_related_nodes(nid, None, True)
-    res = neo.to_list(res)
     if res[0] == 1:
         raise Exception("[ERR_FETCH_TREE_NEO_005] fetch_child_nodes_and_conns ==> Neo error fetching child nodes")
     else:
-        res = res[1]
         for k in res:
-            #ut.log(k)
-            dest_nid = k[0]['nid']
-            conn_str = k[1]['strength']
-            conn_type = k[1]['type']
-            conn_id = k[2]
+            dest_nid = k['nid']
+            conn_str = k['st']
+            conn_type = k['type']
+            conn_id = k['id']
             nodes.add(dest_nid)
-            conn = dict(cid=conn_id, type=conn_type, str=conn_str, src=nid, dest=dest_nid)
+            conn = dict(cid=conn_id, type=conn_type, st=conn_str, src=nid, dest=dest_nid)
             conns.append(conn)
         return 0, nodes, conns
 
