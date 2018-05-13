@@ -72,6 +72,8 @@ err: True for errors
 msg: For errors
 """
 
+def create_node(**cparams):
+    return cmd_create_node(cparams)
 
 def cmd_create_node(cparams):
     try:
@@ -108,6 +110,8 @@ def cmd_create_node(cparams):
         return {'err': True, 'msg': str(e)}
 
 
+def update_node(**cparams):
+    return cmd_update_node(cparams)
 def cmd_update_node(cparams):
     try:
         ut.log('In cmd_update_node:', cparams)
@@ -139,6 +143,8 @@ def cmd_update_node(cparams):
         return {'err': True, 'msg': str(e)}
 
 
+def find_all(**cparams):
+    return cmd_find_all(cparams)
 def cmd_find_all(cparams=None):
     ut.log('In cmd_fetch_all:', cparams)
     """
@@ -160,6 +166,8 @@ def cmd_find_all(cparams=None):
         return {'list': flist}
 
 
+def find_by(**cparams):
+    return cmd_find_by(cparams)
 def cmd_find_by(cparams):
     ut.log('In cmd_find_by:', cparams)
     """
@@ -194,6 +202,8 @@ def cmd_find_by(cparams):
         return {'list': flist}
 
 
+def delete_all(**cparams):
+    return cmd_delete_all(cparams)
 def cmd_delete_all(cparams):
     try:
         ut.log('In cmd_delete_all:', cparams)
@@ -204,6 +214,9 @@ def cmd_delete_all(cparams):
     except Exception as e:
         return {'err': True, 'msg': str(e)}
 
+
+def delete_node(**cparams):
+    return cmd_delete_node(cparams)
 def cmd_delete_node(cparams):
     ut.log('In cmd_delete_one:', cparams)
     neo.delete_by_nid(cparams['nid'])
@@ -216,6 +229,8 @@ def cmd_delete_node(cparams):
         return {'val': str(mresp[1].deleted_count)}
 
 
+def create_conn(**cparams):
+    return cmd_create_conn(cparams)
 def cmd_create_conn(cparams):
     try:
         ctype = 'STD'
@@ -231,6 +246,8 @@ def cmd_create_conn(cparams):
         return {'err': True, 'msg': str(e)}
 
 
+def find_conns(**cparams):
+    return cmd_find_conns(cparams)
 def cmd_find_conns(cparams):
     try:
         ctype = None # Ignores type
@@ -238,12 +255,14 @@ def cmd_find_conns(cparams):
             ctype = cparams['type']
         if 'st' in cparams:
             st = cparams['st']
-        resp = neo.find_all_relations(cparams['src'], cparams['dest'], ctype)
+        resp = neo.find_all_out_relations(cparams['src'], cparams['dest'], ctype)
         return {'val': resp}
     except Exception as e:
         return {'err': True, 'msg': str(e)}
 
 
+def update_conn(**cparams):
+    return cmd_update_conn(cparams)
 # To update conn it is dropped and recreated
 # Update is by cid
 # You can update strenth and type of the conn
@@ -254,6 +273,8 @@ def cmd_update_conn(cparams):
         return {'err': True, 'msg': str(e)}
 
 
+def delete_conn(**cparams):
+    return cmd_delete_conn(cparams)
 # If type is not sent in all connections will be dropped
 # Delete by connection ID or delete by connected nodes
 # If delete is by node ids - src and dest (and optionally type of conn)

@@ -84,7 +84,7 @@ class GraphDb:
     def insert_rel_by_id(self, id1, id2, st):
         cyp = 'MATCH (a:PNODE),(b:PNODE) ' \
             'WHERE ID(a) = {id1} AND ID(b) = {id2} ' \
-            'CREATE (a)-[r:NCONN {strength:{st}}]->(b) ' \
+            'CREATE (a)-[r:NCONN {st:{st}}]->(b) ' \
             'RETURN r, ID(r)'
 
         params = {"id1": id1, "id2": id2, "st": st}
@@ -99,10 +99,10 @@ class GraphDb:
             raise Exception("Bi-directional relationships are not supported")
         elif direction == 1:
             # out going: nid1 -> nid2
-            rel_str = '(a)-[r:NCONN {strength:{st},type:{type}}]->(b) '
+            rel_str = '(a)-[r:NCONN {st:{st},type:{type}}]->(b) '
         elif direction == 2:
             # in coming: nid1 <- nid2
-            rel_str = '(a)<-[r:NCONN {strength:{st},type:{type}}]-(b) '
+            rel_str = '(a)<-[r:NCONN {st:{st},type:{type}}]-(b) '
         else:
             raise Exception("Invalid direction")
 
@@ -186,10 +186,10 @@ class GraphDb:
 
     # rel type and strenth has to be passed or will be reset 
     # # to defaults
-    def update_rel_by_relid(self, rel_id, rel_type="STD", st=50):
+    def update_rel_by_relid(self, rel_id, st=50, rel_type="STD", ):
         cyp = 'MATCH ()-[r:NCONN]-() ' \
             'WHERE ID(r) = {rel_id} ' \
-            'SET r.strength = {st}, r.type = {rel_type}'
+            'SET r.st = {st}, r.type = {rel_type}'
 
         params = {"rel_id": rel_id, "rel_type": rel_type, "st": st}
         r = self.fire_cypher_multi(cyp, params)
