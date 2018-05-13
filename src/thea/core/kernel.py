@@ -6,7 +6,7 @@ Founding principles:
 * Command line and web friendly API
 
 """
-import commands as cm
+import thea.core.commands as cm
 import copy
 
 class Bean:

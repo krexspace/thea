@@ -1,8 +1,12 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+MONGO_URL = '192.168.1.119:27017'
 # creating connections for communicating with Mongo DB
-client = MongoClient('192.168.1.118:27017')
+print('Connecting to MongoDB at {}'.format(MONGO_URL))
+client = MongoClient(MONGO_URL)
+print('Connected to MongoDB')
+
 db = client.MnetPioneer
 
 # Function to insert data into mongo db
