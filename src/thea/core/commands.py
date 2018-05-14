@@ -336,19 +336,19 @@ Currently uses recursion and multiple child calls.abs This can be
 optimized at the NEO layer to fetch everything in one go, and at MONGO layer by sending multiple 
 
 """
-def fetch_node_tree(rootNid, lev=1):
+def fetch_node_tree(rootNid, cytpe=None, lev=10):
     level = 0
     maxLev = lev
     nodes = set()
     conns = []
-    fetch_node_tree_inner(rootNid, level, nodes, conns, maxLev)
+    fetch_node_tree_inner(rootNid, level, nodes, conns, maxLev, cytpe)
     return 0, nodes, conns
 
 # RECURSIVE
-def fetch_node_tree_inner(nid, level, nodes, conns, maxLev=5):
+def fetch_node_tree_inner(nid, level, nodes, conns, maxLev=10, cytpe=None):
     level += 1
     if level <= maxLev:
-        res = fetch_child_nodes_and_conns(nid)
+        res = fetch_child_nodes_and_conns(nid, cytpe)
         cnodes = res[1]
         if len(cnodes) > 0:
             nodes.update(cnodes)
@@ -357,27 +357,25 @@ def fetch_node_tree_inner(nid, level, nodes, conns, maxLev=5):
             conns.extend(cconns)
             #ut.log(level, cconns)
             for sub_node in cnodes:
-                fetch_node_tree_inner(sub_node, level, nodes, conns, maxLev)
+                fetch_node_tree_inner(sub_node, level, nodes, conns, maxLev, cytpe)
     else:
         return None
 
 
-def fetch_child_nodes_and_conns(nid):
+def fetch_child_nodes_and_conns(nid, ctype=None):
     nodes = set()
     conns = []
-    res = neo.find_all_out_related_nodes(nid, None, True)
-    if res[0] == 1:
-        raise Exception("[ERR_FETCH_TREE_NEO_005] fetch_child_nodes_and_conns ==> Neo error fetching child nodes")
-    else:
-        for k in res:
-            dest_nid = k['nid']
-            conn_str = k['st']
-            conn_type = k['type']
-            conn_id = k['id']
-            nodes.add(dest_nid)
-            conn = dict(cid=conn_id, type=conn_type, st=conn_str, src=nid, dest=dest_nid)
-            conns.append(conn)
-        return 0, nodes, conns
+    res = neo.find_all_out_related_nodes(nid, ctype, True)
+    # print(res)
+    for k in res:
+        dest_nid = k['nid']
+        conn_str = k['st']
+        conn_type = k['type']
+        conn_id = k['id']
+        nodes.add(dest_nid)
+        conn = dict(cid=conn_id, type=conn_type, st=conn_str, src=nid, dest=dest_nid)
+        conns.append(conn)
+    return 0, nodes, conns
 
 
 """

@@ -44,6 +44,7 @@ class Graph(Bean):
             return None
         return resp[0]
 
+    ''' ---- special nodes ---- '''
     def cn(self, **params):
         n = Node(**params)
         return n
@@ -96,6 +97,7 @@ class Graph(Bean):
         p = {**p, **params}
         n = Node(**p)
         return n
+    ''' end '''
 
     def clink(n1, n2, st=50, ctype='STD'):
         n1.lo(n2, st, ctype)
@@ -138,10 +140,6 @@ class Node(Bean):
         self.dat = resp['list'][0]
         return self
 
-    # same as ref
-    def ld(self):
-        return self.refresh()
-
     def __isLive(self):
         if self.dat is None:
             raise Exception("Node is dead")
@@ -163,7 +161,8 @@ class Node(Bean):
         cm.cmd_create_conn({'dest':self.dat['nid'],'src':n.dat['nid'],'st':st,'type':ctype})
         return self
 
-    def foutlinksto(self, n, ctype=None):
+    # out links
+    def fols(self, n=None, ctype=None):
         dest = n.dat['nid']
         src = self.dat['nid']
         resp  = cm.find_conns(dest=dest, src=src, type=ctype)
@@ -179,15 +178,17 @@ class Node(Bean):
             conn_list.append(cn)
         return conn_list
 
-    def foutlinkto(self, n, ctype=None):
-        resp = self.foutlinksto(n, ctype)
+    # out link or single child - single only
+    def fol(self, n, ctype=None):
+        resp = self.fols(n, ctype)
         if len(resp) > 1:
-            raise Exception('More than one connection detected. Use foutlinks()')
+            raise Exception('More than one connection detected. Use fols()')
         elif len(resp) == 0:
             return None
         return resp[0]
-
-    def finlinksfrom(self, n, ctype=None):
+        
+    # in links
+    def fils(self, n, ctype=None):
         src = n.dat['nid']
         dest = self.dat['nid']
         resp  = cm.find_conns(dest=dest, src=src, type=ctype)
@@ -203,22 +204,31 @@ class Node(Bean):
             conn_list.append(cn)
         return conn_list
     
-    def finlinkfrom(self, n, ctype=None):
-        resp = self.finlinksfrom(n, ctype)
+    # in link or parent - single only
+    def fil(self, n, ctype=None):
+        resp = self.fils(n, ctype)
         if len(resp) > 1:
-            raise Exception('More than one connection detected. Use links_finlinksfrom()')
+            raise Exception('More than one connection detected. Use fils()')
         elif len(resp) == 0:
             return None
         return resp[0]
 
-    def ftree(self, ctype=None):
-        clist = cm.fetch_child_nodes_and_conns(self.dat['nid'])
-        return clist
+    ''' ---- public util functions ---- '''
     '''
-    foutnodes
-    finnodes
-    finnode
+    Giving ctype returns out connected nodes with the given
+    connection type
     '''
+    def uchildnodes(self, ctype=None):
+        resp = cm.fetch_child_nodes_and_conns(self.dat['nid'], ctype)
+        return resp[1], resp[2]
+
+    '''
+    Giving ctype returns out connected sub tree of nodes with the given
+    connection type in the immediate sub nodes graph.
+    '''
+    def uftree(self, ctype=None):
+        resp = cm.fetch_node_tree(self.dat['nid'], ctype)
+        return resp[1], resp[2]
 
 
 class Conn(Bean):
