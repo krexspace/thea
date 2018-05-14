@@ -1,10 +1,12 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-MONGO_URL = '192.168.1.119:27017'
+import os
+server_host = '192.168.1.119' if os.environ['thea_server'] is None else os.environ['thea_server']
+MONGO_HOST = '{}:27017'.format(server_host)
 # creating connections for communicating with Mongo DB
-print('Connecting to MongoDB at {}'.format(MONGO_URL))
-client = MongoClient(MONGO_URL)
+print('Connecting to MongoDB at {}'.format(MONGO_HOST))
+client = MongoClient(MONGO_HOST)
 print('Connected to MongoDB')
 
 db = client.MnetPioneer

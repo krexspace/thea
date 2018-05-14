@@ -218,7 +218,7 @@ class Node(Bean):
     Giving ctype returns out connected nodes with the given
     connection type
     '''
-    def uchildnodes(self, ctype=None):
+    def ufonodeids(self, ctype=None):
         resp = cm.fetch_child_nodes_and_conns(self.dat['nid'], ctype)
         return resp[1], resp[2]
 
@@ -226,7 +226,7 @@ class Node(Bean):
     Giving ctype returns out connected sub tree of nodes with the given
     connection type in the immediate sub nodes graph.
     '''
-    def uftree(self, ctype=None):
+    def ufotree(self, ctype=None):
         resp = cm.fetch_node_tree(self.dat['nid'], ctype)
         return resp[1], resp[2]
 

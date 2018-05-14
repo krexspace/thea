@@ -4,9 +4,11 @@ refer: https://neo4j.com/docs/api/python-driver/current/
 """
 # password = os.getenv("NEO4J_PASSWORD")
 
-NEO_URL = 'bolt://192.168.1.118'
+import os
+server_host = '192.168.1.119' if os.environ['thea_server'] is None else os.environ['thea_server']
+NEO_URL = 'bolt://{}'.format(server_host)
 print('Connecting to Neo4j at {}'.format(NEO_URL))
-driver = GraphDatabase.driver('bolt://192.168.1.119')
+driver = GraphDatabase.driver(NEO_URL)
 print('Connected to Neo4j')
 
 class GraphDb:
