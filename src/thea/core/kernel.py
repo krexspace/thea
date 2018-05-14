@@ -45,7 +45,7 @@ class Graph(Bean):
             return None
         return resp[0]
 
-    ''' ---- special nodes ---- '''
+    ''' ---- special and readymade nodes ---- '''
     def node(self, **params):
         n = Node(**params)
         return n
@@ -151,21 +151,23 @@ class Graph(Bean):
         p = {**p, **params}
         n = Node(**p)
         return n
-    ''' end '''
+    ''' -- end -> special readymade nodes -- '''
 
-    def clink(n1, n2, st=50, ctype='STD'):
+    def clink(n1, n2, st=50, ctype=None):
         n1.lo(n2, st, ctype)
+
 
 class Session(Bean):
     def __init__(self, **params):
         print('Session created')
         super().__init__(**params)
   
+
 class Node(Bean):
     def __init__(self, **params):
         if 'e' not in params or params['e'] != True:
             super().__init__(**params)
-            resp = cm.cmd_create_node(self.dat)
+            resp = cm.cmd_create_node(copy.deepcopy(self.dat))
             self.__err(resp)
             self.dat['nid'] = resp['val']
     
@@ -206,18 +208,18 @@ class Node(Bean):
     def __repr__(self):
         return 'node-> ' + str(self.dat)
 
-    # outgoing link or connection
-    def clo(self, n, st=50, ctype='STD'):
+    # outgoing links or connections
+    def clo(self, n, st=50, ctype=None):
         cm.cmd_create_conn({'src':self.dat['nid'],'dest':n.dat['nid'],'st':st,'type':ctype})
         return self
 
-    # incoming link or connection
-    def cli(self, n, st=50, ctype='STD'):
+    # incoming links or connections
+    def cli(self, n, st=50, ctype=None):
         cm.cmd_create_conn({'dest':self.dat['nid'],'src':n.dat['nid'],'st':st,'type':ctype})
         return self
 
     # out links
-    def fols(self, dest_node, ctype=None):
+    def foln(self, dest_node, ctype=None):
         dest = dest_node.dat['nid']
         src = self.dat['nid']
         resp  = cm.find_conns(dest=dest, src=src, type=ctype)
@@ -235,15 +237,15 @@ class Node(Bean):
 
     # out link or single child - single only
     def fol(self, dest_node, ctype=None):
-        resp = self.fols(dest_node, ctype)
+        resp = self.foln(dest_node, ctype)
         if len(resp) > 1:
-            raise Exception('More than one connection detected. Use fols()')
+            raise Exception('More than one connection detected. Use foln()')
         elif len(resp) == 0:
             return None
         return resp[0]
         
     # in links
-    def fils(self,src_node, ctype=None):
+    def filn(self,src_node, ctype=None):
         src = src_node.dat['nid']
         dest = self.dat['nid']
         resp  = cm.find_conns(dest=dest, src=src, type=ctype)
@@ -261,9 +263,9 @@ class Node(Bean):
     
     # in link or parent - single only
     def fil(self, src_node, ctype=None):
-        resp = self.fils(src_node, ctype)
+        resp = self.filn(src_node, ctype)
         if len(resp) > 1:
-            raise Exception('More than one connection detected. Use fils()')
+            raise Exception('More than one connection detected. Use filn()')
         elif len(resp) == 0:
             return None
         return resp[0]
@@ -286,6 +288,7 @@ class Node(Bean):
         return resp[1], resp[2]
 
 
+''' Conns don't have a create method '''
 class Conn(Bean):
     def __repr__(self):
         return 'conn-> ' + str(self.dat)

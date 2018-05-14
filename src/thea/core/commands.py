@@ -79,9 +79,9 @@ def cmd_create_node(cparams):
     try:
         ut.log('In cmd_create_node:', cparams)
         # cparams['nid'] = gen_uuid()
-        if 'type' not in cparams:
+        if 'type' not in cparams or cparams['type'] is None:
             cparams['type'] = 'th'
-        if 'zone' not in cparams:
+        if 'zone' not in cparams or cparams['zone'] is None:
             cparams['zone'] = 'std'
         if checkKwds(cparams):
             kwds_str = cparams['kwds']
@@ -117,9 +117,9 @@ def cmd_update_node(cparams):
         ut.log('In cmd_update_node:', cparams)
         if 'nid' not in cparams:
             raise Exception('nid is required to update')
-        if 'type' not in cparams:
+        if 'type' not in cparams or cparams['type'] is None:
             cparams['type'] = 'th'
-        if 'zone' not in cparams:
+        if 'zone' not in cparams or cparams['zone'] is None:
             cparams['zone'] = 'std'
         if checkKwds(cparams):
             kwds_str = cparams['kwds']
@@ -233,9 +233,9 @@ def create_conn(**cparams):
     return cmd_create_conn(cparams)
 def cmd_create_conn(cparams):
     try:
-        ctype = 'STD'
+        ctype = 'std'
         st = 50
-        if 'type' in cparams:
+        if 'type' in cparams and cparams['type'] is not None:
             ctype = cparams['type']
         if 'st' in cparams:
             st = cparams['st']
