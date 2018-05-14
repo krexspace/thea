@@ -246,6 +246,23 @@ def cmd_create_conn(cparams):
         return {'err': True, 'msg': str(e)}
 
 
+# Find all out nodes and conns
+def find_alloutnode(**cparams):
+    return cmd_find_conns(cparams)
+def cmd_find_alloutnode(cparams):
+    try:
+        ctype = None # Ignores type
+        if 'type' in cparams:
+            ctype = cparams['type']
+        if 'st' in cparams:
+            st = cparams['st']
+        resp = neo.find_all_out_related_nodes(cparams['src'], ctype, True)
+        return {'val': resp}
+    except Exception as e:
+        return {'err': True, 'msg': str(e)}
+
+
+# Find by src and dest
 def find_conns(**cparams):
     return cmd_find_conns(cparams)
 def cmd_find_conns(cparams):

@@ -22,6 +22,7 @@ class Bean:
 
 class Graph(Bean):
     def __init__(self, **params):
+        print('Graph object initialized')
         super().__init__(**params)
 
     def delete_all(self):
@@ -45,7 +46,7 @@ class Graph(Bean):
         return resp[0]
 
     ''' ---- special nodes ---- '''
-    def cn(self, **params):
+    def node(self, **params):
         n = Node(**params)
         return n
 
@@ -73,27 +74,80 @@ class Graph(Bean):
         n = Node(**p)
         return n
     
-    def img(self, src, **params):
+    def image(self, src, **params):
         p = dict(src=src, type='img')
         p = {**p, **params}
         n = Node(**p)
         return n
+    
+    # internally located with same type as above
+    def limage(self, src, dom='domx', **params):
+        p = dict(src=src, dom=dom, internal=True, type='img')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+        
+    def video(self, src, **params):
+        p = dict(src=src, type='vid')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
 
-    def yt(self, url, **params):
+    # internally located with same type as above
+    def lvideo(self, src, dom='domx', **params):
+        p = dict(src=src, dom=dom, internal=True, type='vid')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def audio(self, src, **params):
+        p = dict(src=src, type='aud')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+    
+    # internally located with same type as above
+    def laudio(self, src, dom='domx', **params):
+        p = dict(src=src, dom=dom, internal=True, type='aud')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    # file is not used as it might be a key word
+    def rfile(self, src, **params):
+        p = dict(src=src, type='file')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+    
+    # internally located with same type as above
+    def lfile(self, src, dom='domx', **params):
+        p = dict(src=src, dom=dom, internal=True, type='file')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def youtube(self, url, **params):
         p = dict(url=url, type='yt')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def th(self, title, **params):
+    def thought(self, title, **params):
         p = dict(title=title, type='th')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def lnk(self, url, title, **params):
+    def link(self, url, title=None, **params):
         title = url if title is None else title
-        p = dict(title=title, type='lnk')
+        p = dict(url=url, title=title, type='lnk')
+        p = {**p, **params}
+        n = Node(**p)
+        return n
+
+    def logic(self, code, **params):
+        p = dict(code=code, type='logic')
         p = {**p, **params}
         n = Node(**p)
         return n
@@ -104,6 +158,7 @@ class Graph(Bean):
 
 class Session(Bean):
     def __init__(self, **params):
+        print('Session created')
         super().__init__(**params)
   
 class Node(Bean):
@@ -162,8 +217,8 @@ class Node(Bean):
         return self
 
     # out links
-    def fols(self, n=None, ctype=None):
-        dest = n.dat['nid']
+    def fols(self, dest_node, ctype=None):
+        dest = dest_node.dat['nid']
         src = self.dat['nid']
         resp  = cm.find_conns(dest=dest, src=src, type=ctype)
         conn_list = []
@@ -179,8 +234,8 @@ class Node(Bean):
         return conn_list
 
     # out link or single child - single only
-    def fol(self, n, ctype=None):
-        resp = self.fols(n, ctype)
+    def fol(self, dest_node, ctype=None):
+        resp = self.fols(dest_node, ctype)
         if len(resp) > 1:
             raise Exception('More than one connection detected. Use fols()')
         elif len(resp) == 0:
@@ -188,8 +243,8 @@ class Node(Bean):
         return resp[0]
         
     # in links
-    def fils(self, n, ctype=None):
-        src = n.dat['nid']
+    def fils(self,src_node, ctype=None):
+        src = src_node.dat['nid']
         dest = self.dat['nid']
         resp  = cm.find_conns(dest=dest, src=src, type=ctype)
         conn_list = []
@@ -205,8 +260,8 @@ class Node(Bean):
         return conn_list
     
     # in link or parent - single only
-    def fil(self, n, ctype=None):
-        resp = self.fils(n, ctype)
+    def fil(self, src_node, ctype=None):
+        resp = self.fils(src_node, ctype)
         if len(resp) > 1:
             raise Exception('More than one connection detected. Use fils()')
         elif len(resp) == 0:
