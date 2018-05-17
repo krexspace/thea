@@ -171,6 +171,13 @@ class Node(Bean):
             self.__err(resp)
             self.dat['nid'] = resp['val']
     
+    def geto(self):
+        return self.onodes
+
+    def clear(self):
+        self.onodes = None
+        return self
+    
     def set(self, **params):
         self.__isLive()
         super().set(**params)
@@ -270,12 +277,35 @@ class Node(Bean):
             return None
         return resp[0]
 
+    # Get child nodes, in other words get the out connected nodes
+    def fons(self, ctype=None):
+        sub_nids = self.ufonids(ctype)
+        resp = cm.fetch_multi_nodes_by_nid(list(sub_nids[0]))
+        nlist = []
+        for rec in resp:
+            nd = Node(e=True)
+            nd.dat = rec
+            nlist.append(nd)
+        return nlist
+    
+    # Get child nodes, in other words get the out connected nodes
+    def grow(self, ctype=None):
+        self.onodes = self.fons(ctype)
+        return self
+
+    def growt(self, ctype=None):
+        cnodes = self.grow(ctype).onodes
+        for cnode in cnodes:
+            cnode.growt(ctype)
+        return self
+
+
     ''' ---- public util functions ---- '''
     '''
     Giving ctype returns out connected nodes with the given
     connection type
     '''
-    def ufonodeids(self, ctype=None):
+    def ufonids(self, ctype=None):
         resp = cm.fetch_child_nodes_and_conns(self.dat['nid'], ctype)
         return resp[1], resp[2]
 

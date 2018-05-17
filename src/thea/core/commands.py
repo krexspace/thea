@@ -395,6 +395,17 @@ def fetch_child_nodes_and_conns(nid, ctype=None):
     return 0, nodes, conns
 
 
+def fetch_multi_nodes_by_nid(nid_list):
+    resp = mongo.read_multi_by_nid(nid_list)
+    if resp[0] is True:
+            raise Exception("")
+    else:
+        flist = []
+        for ritem in resp[1]:
+            ritem['nid'] = str(ritem['_id'])
+            del ritem['_id']
+            flist.append(ritem)
+        return flist
 """
 Suggested:
 addto_context

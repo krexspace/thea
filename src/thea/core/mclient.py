@@ -57,6 +57,27 @@ def read(cparams):
         print(str(e))
         return True, str(e)
 
+# function to read mutiple records by id
+def read_multi_by_nid(cparams):
+    try:
+        obj_id_list = []
+        for nid in cparams:
+            obj_id_list.append(ObjectId(nid))
+
+        rlist = []
+        recs = db.mnet.find(
+            { "_id": {
+                    "$in" : obj_id_list
+                }
+            }
+        )
+        for rec in recs:
+            rlist.append(rec)
+        return False, rlist
+    except Exception as e:
+        print(str(e))
+        return True, str(e)
+
 
 # Function to delete record from mongo db
 def delete_one(cparams):
