@@ -1,4 +1,5 @@
 sudo docker run \
+    --restart=always \
     --name p-neo \
     --publish=7474:7474 --publish=7687:7687 \
     --volume=$PWD/data_neo:/data \
