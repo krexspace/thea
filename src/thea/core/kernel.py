@@ -170,6 +170,8 @@ class Node(Bean):
             resp = cm.cmd_create_node(copy.deepcopy(self.dat))
             self.__err(resp)
             self.dat['nid'] = resp['val']
+        self.onodes = None
+        self.inodes = None
     
     def geto(self):
         return self.onodes
@@ -213,7 +215,13 @@ class Node(Bean):
             raise Exception(str(resp['msg']))
 
     def __repr__(self):
-        return 'node-> ' + str(self.dat)
+        lonodes = ', num onodes-> {}'.format(len(self.onodes)) if self.onodes is not None else ''
+        linodes = ', num inodes-> {}'.format(len(self.inodes)) if self.inodes is not None else ''
+        return 'node-> {}{}{}'.format(str(self.dat), lonodes, linodes)
+
+    def print(self):
+        print(self.__repr__())
+        return self
 
     # outgoing links or connections
     def clo(self, n, st=50, ctype=None):
@@ -316,6 +324,7 @@ class Node(Bean):
     def ufotree(self, ctype=None):
         resp = cm.fetch_node_tree(self.dat['nid'], ctype)
         return resp[1], resp[2]
+
 
 
 ''' Conns don't have a create method '''
