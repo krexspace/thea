@@ -49,6 +49,12 @@ class Graph(Bean):
     def node(self, **params):
         n = Node(**params)
         return n
+    
+    def nodet(self, title, **params):
+        p = dict(title=title)
+        p = {**p, **params}
+        n = Node(**p)
+        return n
 
     def realm(self, title, **params):
         p = dict(title=title, type='rlm')
