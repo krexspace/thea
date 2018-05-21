@@ -27,6 +27,12 @@ class Graph(Bean):
 
     def delete_all(self):
         cm.cmd_delete_all(None)
+    
+    def list(self, nodes):
+        resp = []
+        for n in nodes:
+            resp.append(n.dat)
+        return resp
 
     def f(self, **params):
         resp = cm.cmd_find_by(params)

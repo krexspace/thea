@@ -31,4 +31,28 @@ if __name__ == '__main__':
 
 def run():
     context = ('thea/core/ssl_cert/server.crt', 'thea/core/ssl_cert/server.key')
+    print('Started THEA server')
+    str = """
+        o    o
+         \__/,'`.,'`._,
+        /,-. \  /    <_,
+        > - )/ /     <_,
+        \__,/ /      ,'
+        _/_(_/______/__
+       ( (_ ,,--'---^,\\
+   ___/ \   / ___,'
+  /,---' \\ \_   `.
+  `      /    `.   \\
+         | thea  \_  \\
+         |/\/\/\| `. \\
+          \ |  /\   `.`.
+           \( /\ \    `.`.
+            | \ `.`._,  `-\_,
+            | /|  `-' 
+            |/\(
+            |(_\\_
+            | / \ (
+           /_/   \_\\
+"""
+    print(str)
     app.run(port=3737, ssl_context=context, threaded=True, debug=False)
