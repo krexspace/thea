@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, make_response
-import thea.core.kernel as k
+import thea.core.kernel2 as k
 import thea.core.utils as ut
 import sys
 
