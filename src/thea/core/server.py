@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, make_response
 import thea.core.kernel as k
+import thea.core.utils as ut
 import sys
 
 g = k.Graph()
@@ -16,10 +17,11 @@ def commandBus():
     try:
         resp = dict(state=0, err=False)
         body = request.get_json()
-        print(body)
+        ut.log(body)
         code  = body['cmd']
         exec(code)
     except Exception as ex:
+        ut.log('Error in commandBus: ',ex)
         resp = {"err": True, "msg": str(ex)}
     return jsonify(resp)
 
@@ -31,7 +33,7 @@ if __name__ == '__main__':
 
 def run():
     context = ('thea/core/ssl_cert/server.crt', 'thea/core/ssl_cert/server.key')
-    print('Started THEA server')
+    ut.log('Started THEA server')
     str = """
         o    o
          \__/,'`.,'`._,
@@ -54,5 +56,5 @@ def run():
             | / \ (
            /_/   \_\\
 """
-    print(str)
+    ut.log(str)
     app.run(port=3737, ssl_context=context, threaded=True, debug=False)

@@ -1,5 +1,5 @@
 import thea.core.neo as nc
-import thea.core.mclient as mongo
+import thea.core.mongo_client as mongo
 import thea.core.utils as ut
 
 neo = nc.GraphDb()

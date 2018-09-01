@@ -1,4 +1,5 @@
 from neo4j.v1 import GraphDatabase
+import thea.core.utils as ut
 """
 refer: https://neo4j.com/docs/api/python-driver/current/
 """
@@ -7,9 +8,9 @@ refer: https://neo4j.com/docs/api/python-driver/current/
 import os
 server_host = '192.168.1.119' if os.environ['thea_server'] is None else os.environ['thea_server']
 NEO_URL = 'bolt://{}'.format(server_host)
-print('Connecting to Neo4j at {}'.format(NEO_URL))
+ut.log('Connecting to Neo4j at {}'.format(NEO_URL))
 driver = GraphDatabase.driver(NEO_URL)
-print('Connected to Neo4j')
+ut.log('Connected to Neo4j')
 
 class GraphDb:
     def __init__(self):
@@ -286,5 +287,5 @@ class GraphDb:
 g = GraphDb()
 g.connect()
 r = g.insert_test_1()
-print(r.single())
+ut.log(r.single())
 '''

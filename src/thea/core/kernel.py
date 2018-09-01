@@ -8,6 +8,7 @@ Founding principles:
 """
 import thea.core.commands as cm
 import copy
+import thea.core.utils as ut
 
 class Bean:
     def __init__(self, **params):
@@ -22,10 +23,11 @@ class Bean:
 
 class Graph(Bean):
     def __init__(self, **params):
-        print('Graph object initialized')
+        ut.log('Graph object initialized')
         super().__init__(**params)
 
     def delete_all(self):
+        ut.log('delete_all')
         cm.cmd_delete_all(None)
     
     def list(self, nodes):
@@ -35,6 +37,7 @@ class Graph(Bean):
         return resp
 
     def f(self, **params):
+        ut.log('In g.f()')
         resp = cm.cmd_find_by(params)
         nlist = []
         for rec in resp['list']:
@@ -92,7 +95,7 @@ class Graph(Bean):
         n = Node(**p)
         return n
     
-    # internally located with same type as above
+    # internally or locally located with same type as above
     def limage(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='img')
         p = {**p, **params}
@@ -105,7 +108,7 @@ class Graph(Bean):
         n = Node(**p)
         return n
 
-    # internally located with same type as above
+    # internally or locally located with same type as above
     def lvideo(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='vid')
         p = {**p, **params}
@@ -118,7 +121,7 @@ class Graph(Bean):
         n = Node(**p)
         return n
     
-    # internally located with same type as above
+    # internally or locally located with same type as above
     def laudio(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='aud')
         p = {**p, **params}
@@ -171,7 +174,7 @@ class Graph(Bean):
 
 class Session(Bean):
     def __init__(self, **params):
-        print('Session created')
+        ut.log('Session created')
         super().__init__(**params)
   
 
@@ -232,7 +235,7 @@ class Node(Bean):
         return 'node-> {}{}{}'.format(str(self.dat), lonodes, linodes)
 
     def print(self):
-        print(self.__repr__())
+        ut.log(self.__repr__())
         return self
 
     # outgoing links or connections
