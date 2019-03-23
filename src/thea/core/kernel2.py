@@ -54,15 +54,16 @@ class Graph(Bean):
             return None
         return resp[0]
 
-    def clink(n1, n2, st=50, ctype=None):
-        n1.lo(n2, st, ctype)
+    # Create connection between node objects n1->n2
+    def connect(n1, n2, st=50, ctype=None):
+        n1.create_conn_out(n2, st, ctype)
 
     ''' ---- special and readymade nodes ---- '''
     def node(self, **params):
         n = Node(**params)
         return n
     
-    def node_q(self, title, **params):
+    def node_quick(self, title, **params):
         p = dict(title=title)
         p = {**p, **params}
         n = Node(**p)
@@ -241,13 +242,13 @@ class Node(Bean):
         ut.log(self.__repr__())
         return self
 
-    # outgoing links or connections
-    def conn_out(self, n, st=50, ctype=None):
+    # Create outgoing links or connections
+    def create_conn_out(self, n, st=50, ctype=None):
         cm.cmd_create_conn({'src':self.dat['nid'],'dest':n.dat['nid'],'st':st,'type':ctype})
         return self
 
-    # incoming links or connections
-    def conn_in(self, n, st=50, ctype=None):
+    # Create incoming links or connections
+    def create_conn_in(self, n, st=50, ctype=None):
         cm.cmd_create_conn({'dest':self.dat['nid'],'src':n.dat['nid'],'st':st,'type':ctype})
         return self
 
