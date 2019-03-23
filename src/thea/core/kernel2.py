@@ -10,6 +10,9 @@ import thea.core.commands as cm
 import copy
 import thea.core.utils as ut
 
+def isList(arg):
+    return type(arg) is list
+
 class Bean:
     def __init__(self, **params):
         self.dat = params
@@ -28,16 +31,21 @@ class Graph(Bean):
 
     def delete_all(self):
         ut.log('delete_all')
-        cm.cmd_delete_all(None)
+        return cm.cmd_delete_all(None)
     
-    def list(self, nodes):
-        resp = []
-        for n in nodes:
-            resp.append(n.dat)
+    # Can be used to display one or modes nodes. (Returns a plain Dict of node data)
+    def display(self, nodes):
+        resp = None
+        if not isList(nodes):
+            resp = nodes.dat
+        else:
+            resp = []
+            for n in nodes:
+                resp.append(n.dat)
         return resp
 
     def find(self, **params):
-        ut.log('In g.f()')
+        ut.log('In g.find()')
         resp = cm.cmd_find_by(params)
         nlist = []
         for rec in resp['list']:
@@ -49,14 +57,20 @@ class Graph(Bean):
     def find_one(self, **params):
         resp = self.find(**params)
         if len(resp) > 1:
-            raise Exception('More than one Node found. Use f()')
+            raise Exception('More than one Node found. Use find()')
         elif len(resp) == 0:
             return None
         return resp[0]
 
     # Create connection between node objects n1->n2
-    def connect(n1, n2, st=50, ctype=None):
+    def connect_nodes(self, n1, n2, st=50, ctype=None):
         n1.create_conn_out(n2, st, ctype)
+        return n1
+
+    # Create connection between node objects n1->n2
+    def connect_by_nid(self, nid_src, nid_dest, st=50, ctype=None):
+        resp = cm.cmd_create_conn({'src':nid_src,'dest':nid_dest,'st':st,'type':ctype})
+        return resp
 
     ''' ---- special and readymade nodes ---- '''
     def node(self, **params):
@@ -172,14 +186,6 @@ class Graph(Bean):
         return n
     ''' -- end -> special readymade nodes -- '''
 
-'''
-@deprecated remove; since sessions can be created in the graph itself
-class Session(Bean):
-    def __init__(self, **params):
-        ut.log('Session created')
-        super().__init__(**params)
-'''
-
 class Node(Bean):
     def __init__(self, **params):
         if 'e' not in params or params['e'] != True:
@@ -201,10 +207,10 @@ class Node(Bean):
     def set(self, **params):
         self.__isLive()
         super().set(**params)
-        self.__sv()
+        self.__save()
         return self
 
-    def __sv(self):
+    def __save(self):
         self.__isLive()
         resp = cm.cmd_update_node(copy.deepcopy(self.dat))
         self.__err(resp)
@@ -227,7 +233,7 @@ class Node(Bean):
 
     def __isLive(self):
         if self.dat is None:
-            raise Exception("Node is dead")
+            raise Exception("Node is a zombie (Not fully loaded)")
     
     def __err(self, resp):
         if resp is not None and 'err' in resp:
@@ -238,7 +244,7 @@ class Node(Bean):
         linodes = ', num inodes-> {}'.format(len(self.inodes)) if self.inodes is not None else ''
         return 'node-> {}{}{}'.format(str(self.dat), lonodes, linodes)
 
-    def print(self):
+    def log(self):
         ut.log(self.__repr__())
         return self
 
@@ -247,9 +253,19 @@ class Node(Bean):
         cm.cmd_create_conn({'src':self.dat['nid'],'dest':n.dat['nid'],'st':st,'type':ctype})
         return self
 
+        # Create outgoing links or connections
+    def create_conn_out_by_nid(self, nid, st=50, ctype=None):
+        cm.cmd_create_conn({'src':self.dat['nid'],'dest':nid,'st':st,'type':ctype})
+        return self
+
     # Create incoming links or connections
     def create_conn_in(self, n, st=50, ctype=None):
         cm.cmd_create_conn({'dest':self.dat['nid'],'src':n.dat['nid'],'st':st,'type':ctype})
+        return self
+
+    # Create incoming links or connections
+    def create_conn_in_by_nid(self, nid, st=50, ctype=None):
+        cm.cmd_create_conn({'dest':self.dat['nid'],'src':nid,'st':st,'type':ctype})
         return self
 
     # out links or connections (and not nodes)
@@ -355,10 +371,10 @@ class Conn(Bean):
     def set(self, **params):
         self.__isLive()
         super().set(**params)
-        self.__sv()
+        self.__save()
         return self
 
-    def __sv(self):
+    def __save(self):
         self.__isLive()
         resp = cm.cmd_update_conn(copy.deepcopy(self.dat))
         self.__err(resp)
@@ -366,7 +382,7 @@ class Conn(Bean):
 
     def __isLive(self):
         if self.dat is None:
-            raise Exception("Conn is dead")
+            raise Exception("Conn is a zombie")
 
     def delete(self):
         self.__isLive()

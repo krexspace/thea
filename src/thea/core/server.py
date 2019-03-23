@@ -17,8 +17,8 @@ def commandBus():
     try:
         resp = dict(state=0, err=False)
         body = request.get_json()
-        ut.log(body)
-        code  = body['cmd']
+        code  = "resp ['data']=" + body['cmd']
+        ut.log("Executing->",code)
         exec(code)
     except Exception as ex:
         ut.log('Error in commandBus: ',ex)
