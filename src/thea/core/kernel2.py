@@ -73,113 +73,113 @@ class Graph(Bean):
         return resp
 
     ''' ---- special and readymade nodes ---- '''
-    def node(self, **params):
+    def create_node(self, **params):
         n = Node(**params)
         return n
     
-    def node_quick(self, title, **params):
+    def create_node_quick(self, title, **params):
         p = dict(title=title)
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def realm(self, title, **params):
+    def create_realm(self, title, **params):
         p = dict(title=title, type='rlm')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def cluster(self, title, **params):
+    def create_cluster(self, title, **params):
         p = dict(title=title, type='cl')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def note(self, title, **params):
+    def create_note(self, title, **params):
         p = dict(title=title, type='note')
         p = {**p, **params}
         n = Node(**p)
         return n
     
-    def idea(self, title, **params):
+    def create_idea(self, title, **params):
         p = dict(title=title, type='idea')
         p = {**p, **params}
         n = Node(**p)
         return n
     
-    def image(self, src, **params):
+    def create_image(self, src, **params):
         p = dict(src=src, type='img')
         p = {**p, **params}
         n = Node(**p)
         return n
     
     # internally or locally located with same type as above
-    def image_int(self, src, dom='domx', **params):
+    def create_image_int(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='img')
         p = {**p, **params}
         n = Node(**p)
         return n
         
-    def video(self, src, **params):
+    def create_video(self, src, **params):
         p = dict(src=src, type='vid')
         p = {**p, **params}
         n = Node(**p)
         return n
 
     # internally or locally located with same type as above
-    def video_int(self, src, dom='domx', **params):
+    def create_video_int(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='vid')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def audio(self, src, **params):
+    def create_audio(self, src, **params):
         p = dict(src=src, type='aud')
         p = {**p, **params}
         n = Node(**p)
         return n
     
     # internally or locally located with same type as above
-    def audio_int(self, src, dom='domx', **params):
+    def create_audio_int(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='aud')
         p = {**p, **params}
         n = Node(**p)
         return n
 
     # file is not used as it might be a key word
-    def file_remote(self, src, **params):
+    def create_file_remote(self, src, **params):
         p = dict(src=src, type='file')
         p = {**p, **params}
         n = Node(**p)
         return n
     
     # internally located with same type as above
-    def file_int(self, src, dom='domx', **params):
+    def create_file_int(self, src, dom='domx', **params):
         p = dict(src=src, dom=dom, internal=True, type='file')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def youtube(self, url, **params):
+    def create_youtube(self, url, **params):
         p = dict(url=url, type='yt')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def thought(self, title, **params):
+    def create_thought(self, title, **params):
         p = dict(title=title, type='th')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def link(self, url, title=None, **params):
+    def create_link(self, url, title=None, **params):
         title = url if title is None else title
         p = dict(url=url, title=title, type='lnk')
         p = {**p, **params}
         n = Node(**p)
         return n
 
-    def logic(self, code, **params):
+    def create_logic(self, code, **params):
         p = dict(code=code, type='logic')
         p = {**p, **params}
         n = Node(**p)
